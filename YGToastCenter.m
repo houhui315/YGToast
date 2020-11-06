@@ -44,7 +44,7 @@
 
 - (void)statusBarOrientationChange:(NSNotification *)noti {
     
-    alertView.center = [UIApplication sharedApplication].keyWindow.center;
+    alertView.center = [self lastWindow].center;
 }
 
 - (BOOL)checkCanShow {
@@ -67,7 +67,7 @@
     
     alertView.transform = CGAffineTransformIdentity;
     alertView.alpha = 0;
-    [[UIApplication sharedApplication].keyWindow addSubview:alertView];
+    [[self lastWindow] addSubview:alertView];
     
     alertView.center = [UIApplication sharedApplication].keyWindow.center;
     alertView.transform = CGAffineTransformScale(alertView.transform, 2, 2);
@@ -80,6 +80,16 @@
         
         [self performSelector:@selector(hideAnimation) withObject:nil afterDelay:alertView.showDuration];
     }];
+}
+
+- (UIWindow *)lastWindow{
+    NSArray *windows = [UIApplication sharedApplication].windows;
+    for (UIWindow *window in [windows reverseObjectEnumerator]) {
+        if ([window isKindOfClass:[UIWindow class]] && CGRectEqualToRect(window.bounds, [UIScreen mainScreen].bounds)) {
+            return window;
+        }
+    }
+    return [UIApplication sharedApplication].keyWindow;
 }
 
 - (void)hideAnimation {
